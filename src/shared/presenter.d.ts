@@ -120,7 +120,7 @@ export interface ResourceListEntry {
 export interface ModelConfig {
   maxTokens: number
   contextLength: number
-  temperature: number
+  temperature?: number
   vision: boolean
   functionCall: boolean
   reasoning: boolean
@@ -128,6 +128,10 @@ export interface ModelConfig {
   // Whether this config is user-defined (true) or default config (false)
   isUserDefined?: boolean
   thinkingBudget?: number
+  // GPT-5 系列新参数
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high'
+  verbosity?: 'low' | 'medium' | 'high'
+  maxCompletionTokens?: number // GPT-5 系列使用此参数替代 maxTokens
 }
 
 export interface IModelConfig {
@@ -174,6 +178,7 @@ export interface IWindowPresenter {
   sendToWindow(windowId: number, channel: string, ...args: unknown[]): boolean
   sendToDefaultTab(channel: string, switchToTarget?: boolean, ...args: unknown[]): Promise<boolean>
   closeWindow(windowId: number, forceClose?: boolean): Promise<void>
+  isApplicationQuitting(): boolean
 }
 
 export interface ITabPresenter {
@@ -210,6 +215,8 @@ export interface ITabPresenter {
   onRendererTabReady(tabId: number): Promise<void>
   onRendererTabActivated(threadId: string): Promise<void>
   isLastTabInWindow(tabId: number): Promise<boolean>
+  registerFloatingWindow(webContentsId: number, webContents: Electron.WebContents): void
+  unregisterFloatingWindow(webContentsId: number): void
   resetTabToBlank(tabId: number): Promise<void>
 }
 
@@ -521,6 +528,19 @@ export type LLM_EMBEDDING_ATTRS = {
   normalized: boolean
 }
 
+// Simplified ModelScope MCP sync options
+export interface ModelScopeMcpSyncOptions {
+  page_number?: number
+  page_size?: number
+}
+
+// ModelScope MCP sync result interface
+export interface ModelScopeMcpSyncResult {
+  imported: number
+  skipped: number
+  errors: string[]
+}
+
 export interface ILlmProviderPresenter {
   setProviders(provider: LLM_PROVIDER[]): void
   getProviders(): LLM_PROVIDER[]
@@ -590,6 +610,10 @@ export interface ILlmProviderPresenter {
       lastRequestTime: number
     }
   >
+  syncModelScopeMcpServers(
+    providerId: string,
+    syncOptions?: ModelScopeMcpSyncOptions
+  ): Promise<ModelScopeMcpSyncResult>
 }
 export type CONVERSATION_SETTINGS = {
   systemPrompt: string
@@ -964,6 +988,8 @@ export interface MCPServerConfig {
   customHeaders?: Record<string, string>
   customNpmRegistry?: string
   type: 'sse' | 'stdio' | 'inmemory' | 'http'
+  source?: string // 来源标识: "mcprouter" | "modelscope" | undefined(for manual)
+  sourceId?: string // 来源ID: mcprouter的uuid 或 modelscope的mcpServer.id
 }
 
 export interface MCPConfig {
@@ -1113,6 +1139,31 @@ export interface IMCPPresenter {
   setCustomNpmRegistry?(registry: string | undefined): Promise<void>
   setAutoDetectNpmRegistry?(enabled: boolean): Promise<void>
   clearNpmRegistryCache?(): Promise<void>
+
+  // McpRouter marketplace
+  listMcpRouterServers?(
+    page: number,
+    limit: number
+  ): Promise<{
+    servers: Array<{
+      uuid: string
+      created_at: string
+      updated_at: string
+      name: string
+      author_name: string
+      title: string
+      description: string
+      content?: string
+      server_key: string
+      config_name?: string
+      server_url?: string
+    }>
+  }>
+  installMcpRouterServer?(serverKey: string): Promise<boolean>
+  getMcpRouterApiKey?(): Promise<string | ''>
+  setMcpRouterApiKey?(key: string): Promise<void>
+  isServerInstalled?(source: string, sourceId: string): Promise<boolean>
+  updateMcpRouterServersAuth?(apiKey: string): Promise<void>
 }
 
 export interface IDeeplinkPresenter {
@@ -1272,7 +1323,7 @@ export { ShortcutKey, ShortcutKeySetting } from '@/presenter/configPresenter/sho
 export interface DefaultModelSetting {
   id: string
   name: string
-  temperature: number
+  temperature?: number
   contextLength: number
   maxTokens: number
   match: string[]
@@ -1281,6 +1332,10 @@ export interface DefaultModelSetting {
   reasoning?: boolean
   type?: ModelType
   thinkingBudget?: number
+  // GPT-5 系列新参数
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high'
+  verbosity?: 'low' | 'medium' | 'high'
+  maxCompletionTokens?: number // GPT-5 系列使用此参数替代 maxTokens
 }
 
 export interface KeyStatus {

@@ -671,24 +671,26 @@ export const defaultModelsSettings: DefaultModelSetting[] = [
   {
     id: 'gpt-oss-120b',
     name: 'GPT OSS 120B',
-    temperature: 0.7,
-    maxTokens: 131000,
-    contextLength: 131000,
+    temperature: 0.6,
+    maxTokens: 32000,
+    contextLength: 128000,
     match: ['gpt-oss-120b'],
     vision: false,
     functionCall: true,
-    reasoning: false
+    reasoning: true,
+    reasoningEffort: 'medium'
   },
   {
     id: 'gpt-oss-20b',
     name: 'GPT OSS 20B',
-    temperature: 0.7,
-    maxTokens: 33000,
-    contextLength: 131000,
+    temperature: 0.6,
+    maxTokens: 16000,
+    contextLength: 128000,
     match: ['gpt-oss-20b'],
     vision: false,
     functionCall: true,
-    reasoning: false
+    reasoning: true,
+    reasoningEffort: 'medium'
   },
   {
     id: 'o4-mini-high',
@@ -864,6 +866,58 @@ export const defaultModelsSettings: DefaultModelSetting[] = [
     vision: true,
     functionCall: false,
     reasoning: true
+  },
+  {
+    id: 'gpt-5-chat',
+    name: 'GPT-5 Chat',
+    maxTokens: 16384,
+    contextLength: 272000,
+    match: ['gpt-5-chat', 'gpt-5-chat-latest'],
+    vision: true,
+    functionCall: false,
+    reasoning: true,
+    reasoningEffort: 'medium',
+    verbosity: 'medium',
+    maxCompletionTokens: 16384
+  },
+  {
+    id: 'gpt-5-mini',
+    name: 'GPT-5 Mini',
+    maxTokens: 128000,
+    contextLength: 272000,
+    match: ['gpt-5-mini', 'gpt-5-mini-2025-08-07'],
+    vision: true,
+    functionCall: true,
+    reasoning: true,
+    reasoningEffort: 'medium',
+    verbosity: 'medium',
+    maxCompletionTokens: 128000
+  },
+  {
+    id: 'gpt-5-nano',
+    name: 'GPT-5 Nano',
+    maxTokens: 128000,
+    contextLength: 272000,
+    match: ['gpt-5-nano', 'gpt-5-nano-2025-08-07'],
+    vision: true,
+    functionCall: true,
+    reasoning: true,
+    reasoningEffort: 'medium',
+    verbosity: 'medium',
+    maxCompletionTokens: 128000
+  },
+  {
+    id: 'gpt-5',
+    name: 'GPT-5',
+    maxTokens: 128000,
+    contextLength: 272000,
+    match: ['gpt-5', 'gpt-5-2025-08-07'],
+    vision: true,
+    functionCall: true,
+    reasoning: true,
+    reasoningEffort: 'medium',
+    verbosity: 'medium',
+    maxCompletionTokens: 128000
   },
   {
     id: 'gpt-4.5-preview',
